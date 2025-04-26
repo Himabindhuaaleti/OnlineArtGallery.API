@@ -79,25 +79,8 @@ https://localhost:<port>/swagger/index.html
 
 ## ⚙️ Requirements
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (or .NET 6)
-- [SQL Server 2019+](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+- .NET 8 SDK
+- SQL Server 
 - Any IDE like **Visual Studio** or **VS Code**
 
 ---
-
-## ✅ Features (Optional for Expansion)
-
-- User authentication (JWT)
-- Artwork management
-- Order placement
-- Invoice generation (optional)
-
----
-
-## 📂 Structure (Optional for Adding Later)
-
-Feel free to include folder structure, API routes, or setup diagrams if needed.
-
----
-
-Let me know if you'd like to add a badge, screenshot, or contributors section!
