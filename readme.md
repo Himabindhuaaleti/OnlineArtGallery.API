@@ -1,30 +1,56 @@
-- dotnet ef migrations add AddImageUrlColumn
-- dotnet ef database update
+# 🖼️ Online Art Gallery - ASP.NET Core Web API Backend
 
-✅ Phase 1: Project Setup & Configuration
-✅ Create ASP.NET Core Web API Project
-✅ Install EF Core packages and set up GalleryContext
-✅ Define all required models (User, ArtProduct, Order, OrderDetail, etc.)
-✅ Configure DbContext in Program.cs with SQL Server connection string
-🔐 Phase 2: Security Module (JWT Authentication)
-✅ Implement user registration with password hashing (BCrypt)
-✅ Implement login endpoint to return JWT token
-✅ Configure JWT middleware & role-based authorization
-✅ Add [Authorize] attributes for protected routes
-🖼️ Phase 3: Art Work Management Module
-✅ Get art by category
-✅ Get art by ID or IDs
-✅ Get product details for list of IDs (e.g., cart contents)
-✅ Place order & save order details in DB
-🧾 Phase 4: Optional (If Time Permits)
-Generate and return invoice data when an order is placed
-🔁 Phase 5: API Improvements & Best Practices
-✅ Seeding database with dummy data
-Input validation (DTOs, FluentValidation)
-Logging & error handling
-Use Automapper for DTO conversions
-Organize folders: Controllers, Models, DTOs, Services, Helpers, etc.
+## 🚀 How to Run This Project
 
-If that sounds good, let’s begin now from Phase 1, and rework or enhance the components you’ve already built, where needed.
+### 1. Clone the Repository
 
-Would you like me to start by reviewing and refining your models and DbContext, or jump directly into authentication flow and role-based setup since we already have basic models?
+git clone OnlineArtGallery.API -- clone repo
+cd OnlineArtGallery.API
+
+### 2. Configure the Database
+
+Make sure SQL Server is installed and running.
+
+Edit the connection string in `appsettings.json`:
+
+{
+"ConnectionStrings": {
+"GalleryConnection": "Server=localhost;Database=OnlineArtGalleryDb; Trusted_Connection=True;TrustServerCertificate=True;"
+}
+}
+
+#### NOTE:- Change localhost to your server name (example:- BAPC\\SQLEXPRESS)
+
+### 3. Install Dependencies
+
+`dotnet restore`
+
+### 4. Apply Migrations and Seed Data
+
+If no migration exists:
+
+`dotnet ef migrations add InitialCreate`
+
+Then update the database:
+
+`dotnet ef database update`
+
+✅ The database and schema will be created.
+
+### 5. Run the API
+
+`dotnet run`
+
+Then open your browser and go to:
+
+`/swagger/index.html`
+
+Swagger will list all available endpoints.
+
+### ⚙️ Requirements
+
+.NET 8 SDK (or 6 if you're using it)
+
+SQL Server (2019 or later)
+
+Any IDE like VS Code
