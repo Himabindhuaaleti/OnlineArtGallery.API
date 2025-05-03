@@ -1,86 +1,164 @@
-
 # 🖼️ Online Art Gallery - ASP.NET Core Web API Backend
 
-This is the backend of the **Online Art Gallery** project built using ASP.NET Core Web API with Entity Framework Core and SQL Server.
+## This document provides a summary of the available API endpoints and key files for the **Online Art Gallery** backend project.
+
+### 📚 [API Endpoints Overview - Online Art Gallery Backend](#authentication)
+
+### 🚀 [How to Run This Project](#how-to-run-this-project)
 
 ---
 
-## 🚀 How to Run This Project
+### Authentication
+
+| Method | Endpoint             | Description               |
+| :----- | :------------------- | :------------------------ |
+| POST   | `/api/Auth/register` | Register a new user       |
+| POST   | `/api/Auth/login`    | Login and get a JWT token |
+| GET    | `/api/Auth/{id}`     | Get user details          |
+
+---
+
+### 🎨 ArtWork
+
+| Method | Endpoint                             | Description                     |
+| :----- | :----------------------------------- | :------------------------------ |
+| GET    | `/api/ArtWork`                       | Get all artworks                |
+| GET    | `/api/ArtWork/{id}`                  | Get artwork by ID               |
+| GET    | `/api/ArtWork/category/{categoryId}` | Get artworks by category        |
+| POST   | `/api/ArtWork/batch`                 | Get artworks by IDs (in body)   |
+| POST   | `/api/ArtWork`                       | Create new artwork (Admin only) |
+| PUT    | `/api/ArtWork/{id}`                  | Update artwork (Admin only)     |
+| DELETE | `/api/ArtWork/{id}`                  | Delete artwork (Admin only)     |
+
+---
+
+### 🗂️ Category
+
+| Method | Endpoint             | Description                      |
+| :----- | :------------------- | :------------------------------- |
+| GET    | `/api/Category`      | Get all categories               |
+| GET    | `/api/Category/{id}` | Get category by ID               |
+| POST   | `/api/Category`      | Create new category (Admin only) |
+| PUT    | `/api/Category/{id}` | Update category (Admin only)     |
+| DELETE | `/api/Category/{id}` | Delete category (Admin only)     |
+
+---
+
+### 🛒 Order
+
+| Method | Endpoint                  | Description                                               |
+| :----- | :------------------------ | :-------------------------------------------------------- |
+| GET    | `/api/Order`              | Get all orders (Admin sees all, users see only their own) |
+| GET    | `/api/Order/{id}`         | Get order by ID                                           |
+| POST   | `/api/Order`              | Create new order                                          |
+| GET    | `/api/Order/invoice/{id}` | Get invoice for an order                                  |
+
+---
+
+## 🗃️ Key Files and Their Functions
+
+### 📦 Models/
+
+- **User.cs** - Represents user accounts
+- **Category.cs** - Represents art categories
+- **ArtWork.cs** - Represents art pieces
+- **Order.cs** - Represents customer orders
+- **OrderItem.cs** - Represents items in an order
+
+### 📂 Data/
+
+- **ArtGalleryContext.cs** - Entity Framework `DbContext` for database operations
+- **DataSeeder.cs** - Seeds initial data into the database
+
+### 📨 DTOs/ (Data Transfer Objects)
+
+- **UserDtos.cs** - DTOs for user-related operations
+- **ArtWorkDtos.cs** - DTOs for artwork-related operations
+- **OrderDtos.cs** - DTOs for order-related operations
+
+### 🧩 Controllers/
+
+- **AuthController.cs** - Handles user authentication and registration
+- **ArtWorkController.cs** - Manages artworks
+- **CategoryController.cs** - Manages categories
+- **OrderController.cs** - Manages orders and invoices
+
+### 🛠️ Helpers/
+
+- **AuthHelper.cs** - Helper methods for authentication and JWT generation
+
+### 🛠️ Program.cs
+
+- Sets up dependency injection
+- Configures JWT authentication
+- Sets up database connection
+- Configures CORS for Angular frontend
+
+---
+
+## ✅ Features Implemented
+
+- Token-based authentication using JWT
+- Role-based security (Admin vs Customer roles)
+- RESTful API endpoints for artwork, user, and order management
+- SQL Server database integration using Entity Framework Core
+- Proper relationships between entities
+- Invoice generation functionality
+
+## How to Run This Project
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/Himabindhuaaleti/OnlineArtGallery.API.git
-cd OnlineArtGallery.API
-```
+`git clone OnlineArtGallery.API`
 
----
+`cd OnlineArtGallery.API`
 
 ### 2. Configure the Database
 
-Make sure **SQL Server** is installed and running.
+Make sure SQL Server is installed and running.
 
 Edit the connection string in `appsettings.json`:
 
-```json
+```bash
 {
-  "ConnectionStrings": {
-    "GalleryConnection": "Server=localhost;Database=OnlineArtGalleryDb;Trusted_Connection=True;TrustServerCertificate=True;"
-  }
+    "ConnectionStrings": {
+        "GalleryConnection": "Server=localhost;Database=OnlineArtGalleryDb;Trusted_Connection=True;TrustServerCertificate=True;"
+    }
 }
 ```
 
-> 🔧 **Note:** Replace `localhost` with your SQL Server name.  
-> Example: `BAPC\SQLEXPRESS`
-
----
+`NOTE : - Change localhost to your server name (example:- SystemName\\SQLEXPRESS)`
 
 ### 3. Install Dependencies
 
-```bash
-dotnet restore
-```
-
----
+`dotnet restore`
 
 ### 4. Apply Migrations and Seed Data
 
-If no migrations exist, run:
+If no migration exists:
 
-```bash
-dotnet ef migrations add InitialCreate
-```
+`dotnet ef migrations add InitialCreate`
 
 Then update the database:
 
-```bash
-dotnet ef database update
-```
+`dotnet ef database update`
 
-✅ This will create the database and schema.
-
----
+✅ The database and schema will be created.
 
 ### 5. Run the API
 
-```bash
-dotnet run
-```
+`dotnet run`
 
 Then open your browser and go to:
 
-```
-https://localhost:<port>/swagger/index.html
-```
+`localhost:5052/swagger/index.html`
 
-📘 Swagger will list all available API endpoints.
+Swagger will list all available endpoints.
 
----
+### ⚙️ Requirements
 
-## ⚙️ Requirements
+.NET SDK
 
-- .NET 8 SDK
-- SQL Server 
-- Any IDE like **Visual Studio** or **VS Code**
+SQL Server
 
----
+Any IDE like VS Code

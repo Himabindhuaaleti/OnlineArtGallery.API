@@ -12,7 +12,9 @@ Thumbs.db
 .idea/
 publish/
 node_modules/
-git*
+
 
 # EF Core Migrations build artifacts (optional if you want)
 Migrations/
+gitsshkeys
+gitsshkeys.pub

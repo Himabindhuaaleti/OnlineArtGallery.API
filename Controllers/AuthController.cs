@@ -1,50 +1,120 @@
-
-// STEP 5: Controllers
-// File: Controllers/AuthController.cs
+using ArtGallery.API.Data;
+using ArtGallery.API.DTOs;
+using ArtGallery.API.Helpers;
+using ArtGallery.API.Models;
 using Microsoft.AspNetCore.Mvc;
-using OnlineArtGallery.API.DTOs;
-using OnlineArtGallery.API.Models;
-using OnlineArtGallery.API.Data;
-using OnlineArtGallery.API.Helpers;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Threading.Tasks;
 
-namespace OnlineArtGallery.API.Controllers
+namespace ArtGallery.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly GalleryContext _context;
-        private readonly JwtService _jwtService;
+        private readonly ArtGalleryContext _context;
+        private readonly IConfiguration _config;
 
-        public AuthController(GalleryContext context, JwtService jwtService)
+        public AuthController(ArtGalleryContext context, IConfiguration config)
         {
             _context = context;
-            _jwtService = jwtService;
-        }
-
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto loginDto)
-        {
-            var user = _context.Users.SingleOrDefault(u => u.Username == loginDto.Username && u.PasswordHash == loginDto.Password);
-            if (user == null) return Unauthorized();
-
-            var token = _jwtService.GenerateToken(user);
-            return Ok(new { token });
+            _config = config;
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
         {
+            userRegisterDto.Username = userRegisterDto.Username.ToLower();
+
+            if (await _context.Users.AnyAsync(u => u.Username == userRegisterDto.Username))
+                return BadRequest("Username already exists");
+
+            if (await _context.Users.AnyAsync(u => u.Email == userRegisterDto.Email))
+                return BadRequest("Email already exists");
+
+            AuthHelper.CreatePasswordHash(userRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
             var user = new User
             {
-                Username = registerDto.Username,
-                PasswordHash = registerDto.Password, // Hash in real app!
-                Role = "User"
+                Username = userRegisterDto.Username,
+                Email = userRegisterDto.Email,
+                FirstName = userRegisterDto.FirstName,
+                LastName = userRegisterDto.LastName,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Role = "Customer", // Default role
+                CreatedAt = DateTime.Now
             };
-            _context.Users.Add(user);
-            _context.SaveChanges();
-            return Ok();
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            var userToReturn = new UserDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt
+            };
+
+            return CreatedAtRoute("GetUser", new { id = user.Id }, userToReturn);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == userLoginDto.Username.ToLower());
+
+            if (user == null)
+                return Unauthorized("Invalid username");
+
+            if (!AuthHelper.VerifyPasswordHash(userLoginDto.Password, user.PasswordHash, user.PasswordSalt))
+                return Unauthorized("Invalid password");
+
+            var token = AuthHelper.GenerateJwtToken(user, _config["AppSettings:Token"]);
+
+            return Ok(new 
+            { 
+                token = token,
+                user = new UserDto
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Role = user.Role,
+                    CreatedAt = user.CreatedAt
+                }
+            });
+        }
+
+        [HttpGet("{id}", Name = "GetUser")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            var userToReturn = new UserDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt
+            };
+
+            return Ok(userToReturn);
         }
     }
 }
